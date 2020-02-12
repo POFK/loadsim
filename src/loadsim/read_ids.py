@@ -66,28 +66,35 @@ class ReadIds(ReadSub):
 
     def get_par_ids(self, submbid=0):
         """
-        FIXIT: one subhalo saved into two files?
+        FIXIT: one subhalo saved into two files? :finished
         """
         sub = self.subtable[submbid]
         sublen = sub['SubLen']
         suboff = sub['SubOffset']
         subend = suboff + sublen
-        fnrs = self.get_par_files(submbid)
-        loc_offset = suboff - self.NidOff[fnrs]
-        self.ids_setbuf(fnrs)
-        with open(self.ids_buf, 'r') as fp:
-            self.ids_header = self.fromfile(
-                fp, dtype=self.dt_ids_header, count=1)[0]
-            fp.seek(self.ids_header.nbytes+loc_offset*4, 0)
-            ids = self.fromfile(fp, dtype=np.int32, count=sublen)
-            fp.close()
+        fnrs = self.get_par_files(submbid).flatten()
+        ids = []
+        for fnr in fnrs:
+            loc_offset = max(0, suboff - self.NidOff[fnr])
+            loc_len = min(subend - self.NidOff[fnr]-loc_offset,
+                          self.Nids[fnr] - loc_offset)
+            self.ids_setbuf(fnr)
+            with open(self.ids_buf, 'r') as fp:
+                self.ids_header = self.fromfile(
+                    fp, dtype=self.dt_ids_header, count=1)[0]
+                fp.seek(self.ids_header.nbytes+loc_offset*4, 0)
+                ids.append(self.fromfile(fp, dtype=np.int32, count=loc_len))
+                fp.close()
+        ids = np.hstack(ids)
+        print(ids, ids.shape)
         assert ids[0] == submbid, "The first id should be most bound id!"
+        assert ids.size == sublen, "The length of particels should be equal to sublen!"
         return ids
 
     def __call__(self, submbid=7881425):
-        #print("-"*10)
-        #print(self.subtable[submbid])
-        #print(self.subtable[submbid].dtype)
+        # print("-"*10)
+        # print(self.subtable[submbid])
+        # print(self.subtable[submbid].dtype)
         return self.get_par_ids(submbid)
 
 

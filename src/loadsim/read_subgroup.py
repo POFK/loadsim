@@ -146,7 +146,7 @@ class ReadSub(object):
 
 
 if __name__ == "__main__":
-    rs = ReadSub('../groups_066/subhalo_tab_066.')
+    rs = ReadSub('/home/mtx/work/tree/groups_066/subhalo_tab_066.')
     fnr = 0
     rs.getheader(fnr)
     print(rs.header)
@@ -156,4 +156,5 @@ if __name__ == "__main__":
     #gr, sub = rs.LoadData(0)
     print(gr.dtype, gr.shape)
     print(sub.dtype, sub.shape)
+    print(sub['SubhaloMass'][:10],sub['SubMostBoundID'][:10])
     print("="*80)

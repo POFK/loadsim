@@ -25,7 +25,45 @@ class TestsubGroup():
 
     def test_first_id_is_mostboundid(self, submbid=12638380):
         ids = self.rs.get_par_ids(submbid=submbid)
-        assert ids[0] == submbid 
+        assert ids[0] == submbid
 
-    def test_sub_in_two_files(self, submbid=12638380):
-        pass
+    def test_ids_sublen(self, submbid=12638380):
+        ids = self.rs.get_par_ids(submbid=submbid)
+        assert ids.size == self.rs.subtable[submbid]['SubLen']
+
+    def test_ids_shape(self, submbid=12638380):
+        ids = self.rs.get_par_ids(submbid=submbid)
+        assert ids.shape == (self.rs.subtable[submbid]['SubLen'])
+
+    def test_ids_unique(self, submbid=12638380):
+        ids = self.rs.get_par_ids(submbid=submbid)
+        assert np.unique(ids).size == ids.size
+
+    def test_sub_in_multiple_files_filenum(self):
+        # submbid=8495089
+        submbid = self.rs.Data_sub['SubMostBoundID'][0]
+        fnrs = self.rs.get_par_files(submbid)
+        assert fnrs.size > 1
+
+    def test_sub_in_multiple_files_sublen(self):
+        # submbid=8495089
+        submbid = self.rs.Data_sub['SubMostBoundID'][0]
+        sub = self.rs.subtable[submbid]
+        print(sub.dtype)
+        print(sub)
+        ids = self.rs.get_par_ids(submbid=submbid)
+        assert ids.size == sub['SubLen']
+
+    def test_sub_in_multiple_files_mbid(self):
+        # submbid=8495089
+        submbid = self.rs.Data_sub['SubMostBoundID'][0]
+        sub = self.rs.subtable[submbid]
+        ids = self.rs.get_par_ids(submbid=submbid)
+        assert ids[0] == submbid
+
+    def test_sub_in_multiple_files_unique(self):
+        # submbid=8495089
+        submbid = self.rs.Data_sub['SubMostBoundID'][0]
+        sub = self.rs.subtable[submbid]
+        ids = self.rs.get_par_ids(submbid=submbid)
+        assert np.unique(ids).size == ids.size
